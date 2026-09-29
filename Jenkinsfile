@@ -12,11 +12,12 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // This will now be the ONLY checkout that happens
-                checkout scm
-            }
+
+        stage('Clean & Checkout') {
+                steps {
+                    cleanWs() // Clean the workspace first
+                    checkout scm // Manually fetch code from source control
+                }
         }
 
         stage('Build & Package') {
