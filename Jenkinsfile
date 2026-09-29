@@ -28,7 +28,7 @@ pipeline {
 
         stage('Deploy Locally') {
             steps {
-                sh 'cp target/demo-0.0.1-SNAPSHOT.war /app-deploy/'
+                sh 'cp target/demo-0.0.1-SNAPSHOT.war /mnt/tomcat_webapps/app.war'
             }
         }
     }
