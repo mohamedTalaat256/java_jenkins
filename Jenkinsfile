@@ -1,6 +1,7 @@
 pipeline {
-    agent any
+    agent { label 'your-windows-node-label' }
     options {
+        // Prevents Jenkins from automatically checking out code twice
         skipDefaultCheckout()
     }
     tools {
@@ -10,8 +11,8 @@ pipeline {
     stages {
         stage('Clean & Checkout') {
             steps {
-                cleanWs()
-                checkout scm
+                cleanWs() // Clean the workspace first
+                checkout scm // Manually fetch code from source control
             }
         }
         stage('Build & Package') {
@@ -19,14 +20,13 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('Deploy Remotely') {
+        stage('Deploy Locally') {
             steps {
-                // 1. Securely copy (scp) the war file to the Windows machine and rename it
-                // Replace 'user@windows-ip' with your actual Windows username and server IP/hostname
-                sh 'scp target/demo-0.0.1-SNAPSHOT.war user@windows-ip:"C:/Program Files/Apache Software Foundation/Tomcat 11.0_Tomcat11-spring-app/webapps/app.war"'
+                // Copy and rename the file using Windows Batch (wrapped in double quotes due to spaces in path)
+                bat 'copy "target\\demo-0.0.1-SNAPSHOT.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 11.0_Tomcat11-spring-app\\webapps\\app.war"'
 
-                // 2. Restart the Windows service via SSH
-                sh 'ssh user@windows-ip "net stop Tomcat11-spring-app && net start Tomcat11-spring-app"'
+                // Restart the Windows Service
+                bat 'net stop Tomcat11-spring-app && net start Tomcat11-spring-app'
             }
         }
     }
