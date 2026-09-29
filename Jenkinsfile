@@ -1,5 +1,6 @@
 pipeline {
-    agent any
+    // Restricts the pipeline to run only on a Windows agent
+    agent { label 'windows' }
 
     options {
         // Prevents Jenkins from automatically checking out code twice
@@ -12,7 +13,6 @@ pipeline {
     }
 
     stages {
-
         stage('Clean & Checkout') {
             steps {
                 cleanWs() // Clean the workspace first
@@ -22,7 +22,8 @@ pipeline {
 
         stage('Build & Package') {
             steps {
-                sh 'mvn clean package'
+                // Changed from 'sh' to 'bat' since this runs on a Windows agent
+                bat 'mvn clean package'
             }
         }
 
